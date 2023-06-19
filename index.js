@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import Converter from "./converter.js";
 
-const server = http.createServer((req, res) => {
+const server = createServer((req, res) => {
     if (req.method === "POST" && req.url === "/exports") {
       handleExportRequest(req, res);
     } else if (req.method === "GET" && req.url === "/files") {
@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
   
         if (!directoryPath) {
           res.statusCode = 400;
-          res.end("Invalid request: directoryPath is required");
+          res.end("Directory Path is required");
           return;
         }
   
@@ -40,11 +40,11 @@ const server = http.createServer((req, res) => {
         await converter.start();
   
         res.statusCode = 200;
-        res.end("CSV files converted and saved successfully");
+        res.end("CSV files are converted and saved successfully");
       } catch (error) {
-        console.error("Error during export:", error);
+        console.error("Error", error);
         res.statusCode = 500;
-        res.end("Internal Server Error");
+        res.end("Server Error");
       }
     });
   }
@@ -60,9 +60,9 @@ const server = http.createServer((req, res) => {
       res.statusCode = 200;
       res.end(JSON.stringify(fileNames));
     } catch (error) {
-      console.error("Error retrieving files:", error);
+      console.error("Error", error);
       res.statusCode = 500;
-      res.end("Internal Server Error");
+      res.end("Server Error");
     }
   }
   
@@ -79,12 +79,12 @@ const server = http.createServer((req, res) => {
         res.end(fileContent);
       } else {
         res.statusCode = 404;
-        res.end("File not found");
+        res.end("File is not found");
       }
     } catch (error) {
-      console.error("Error retrieving file:", error);
+      console.error("Error", error);
       res.statusCode = 500;
-      res.end("Internal Server Error");
+      res.end("Server Error");
     }
   }
   
@@ -96,15 +96,15 @@ const server = http.createServer((req, res) => {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         res.statusCode = 200;
-        res.end("File deleted successfully");
+        res.end("File is deleted");
       } else {
         res.statusCode = 404;
-        res.end("File not found");
+        res.end("File is not found");
       }
     } catch (error) {
-      console.error("Error deleting file:", error);
+      console.error("Error", error);
       res.statusCode = 500;
-    res.end("Internal Server Error");
+    res.end("Server Error");
   }
 }
 
