@@ -13,7 +13,7 @@ const server = createServer((req, res) => {
     } else if (req.method === "DELETE" && req.url.startsWith("/files/")) {
       handleDeleteFileRequest(req, res);
     } else {
-      res.statusCode = 404;
+      res.writeHead(404, {"Content-Type": "text/plain"});
       res.end("Not Found");
     }
   });
@@ -36,7 +36,7 @@ const server = createServer((req, res) => {
           return;
         }
   
-        const converter = new Converter(directoryPath);
+        const converter = new Converter("csv-files");
         await converter.start();
   
         res.statusCode = 200;
@@ -52,13 +52,10 @@ const server = createServer((req, res) => {
   function handleGetFilesRequest(req, res) {
     try {
       const jsonFiles = fs.readdirSync("converted");
-      const fileNames = jsonFiles.map((fileName) =>
-        path.parse(fileName).name
-      );
   
-      res.setHeader("Content-Type", "application/json");
-      res.statusCode = 200;
-      res.end(JSON.stringify(fileNames));
+      res.writeHead(200, {"Content-Type": "application/json"});
+    
+      res.end(JSON.stringify(jsonFiles));
     } catch (error) {
       console.error("Error", error);
       res.statusCode = 500;
@@ -67,15 +64,14 @@ const server = createServer((req, res) => {
   }
   
   function handleGetFileRequest(req, res) {
-    const fileName = req.url.split("/")[2] + ".json";
+    const fileName = req.url.split("/")[2].split(":")[1] + ".json";
     const filePath = path.join("converted", fileName);
   
     try {
       if (fs.existsSync(filePath)) {
         const fileContent = fs.readFileSync(filePath, "utf8");
   
-        res.setHeader("Content-Type", "application/json");
-        res.statusCode = 200;
+        res.writeHead(200, {"Content-Type": "application/json"});
         res.end(fileContent);
       } else {
         res.statusCode = 404;
@@ -89,7 +85,7 @@ const server = createServer((req, res) => {
   }
   
   function handleDeleteFileRequest(req, res) {
-    const fileName = req.url.split("/")[2] + ".json";
+    const fileName = req.url.split("/")[2].split(":")[1] + ".json";
     const filePath = path.join("converted", fileName);
   
     try {
@@ -108,7 +104,9 @@ const server = createServer((req, res) => {
   }
 }
 
-server.listen(3000);
+server.listen(3001, () => {
+    console.log("Server starts!")
+});
 
 
 

@@ -82,23 +82,6 @@ export default class Converter {
     }
 }
 
-const directoryPath = process.argv[2];
- console.log(directoryPath)
 
-if (!directoryPath) {
-  console.error("No such directory!");
-  process.exit();
-}
-
-const converter = new Converter(directoryPath);
-converter.start()
-  .then(() => {
-    console.log("Success!");
-    process.exit();
-  })
-  .catch(err => {
-    console.error("Failed!", err);
-    process.exit();
-  });
 
   
